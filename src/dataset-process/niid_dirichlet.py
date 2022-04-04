@@ -7,8 +7,12 @@ import logging
 import torchvision.transforms as transforms
 import torch.utils.data as data
 
-from datasets import MNIST_truncated, CIFAR10_truncated
 
+from datasets import MNIST_truncated, CIFAR10_truncated
+from pickle import dump
+
+
+number_of_clients = 10
 
 def load_mnist_data(datadir):
 
@@ -45,7 +49,10 @@ def partition_data(dataset, datadir, logdir, partition, n_nets, alpha=0.5):
         X_train, y_train, X_test, y_test = load_mnist_data(datadir)
     elif dataset == 'cifar10':
         X_train, y_train, X_test, y_test = load_cifar10_data(datadir)
-	
+
+    X_train = np.concatenate((X_train,X_test))
+    y_train = np.concatenate((y_train,y_test))
+    
     n_train = X_train.shape[0]
 
     if partition == "homo":
@@ -93,4 +100,20 @@ def record_net_data_stats(y_train, net_dataidx_map, logdir):
 
     return net_cls_counts
 
-partition_data('mnist','mnist','logs','hetero-dir',20)
+X_train, y_train, X_test, y_test, data_index, counts = partition_data('cifar10','cifar10','logs','hetero-dir',number_of_clients)
+
+
+client_data = [[],[]]
+
+for index in range(number_of_clients):
+    for item in data_index[index]:
+        client_data[0].append(X_train[item])
+        client_data[1].append(y_train[item])
+        
+    # save the current client dataset and clean the variable to the next client
+    dump(client_data[0],open('../../datasets/CIFAR-10/direchlet-partition/client_'+str(index+1)+'_samples',"wb"))
+    dump(client_data[1],open('../../datasets/CIFAR-10/direchlet-partition/client_'+str(index+1)+'_class',"wb"))
+
+    client_data = [[],[]]
+        
+
