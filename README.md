@@ -14,12 +14,6 @@ If you find this code useful in your research, please consider citing:
     year = {2022}
     }
 
-    @article{souza2022ecml,
-    author = {Lucas Airam C. de Souza, Gustavo F. Camilo, Matteo Sammarco, Marcin Detyniecki, Miguel Elias M. Campista, and Luís Henrique M. K. Costa},
-    journal = {},
-    title = {Federated Learning with Hierarchical Clustering of Clients},
-    year = {2022}
-    }
 
 
 
