@@ -23,7 +23,7 @@ if len(argv) >= 2:
 if len(argv) >= 3:
     serverPort = argv[2]
 
-strategy = fl.server.strategy.FedAvg(min_available_clients=10,min_fit_clients=10,fraction_fit=1.0,fraction_eval=1.0)
+strategy = fl.server.strategy.FedAvg(min_available_clients=2,fraction_fit=0.5,fraction_eval=1.0)
 
 fl.server.start_server(config={"num_rounds": numRounds},server_address='[::]:'+serverPort,strategy=strategy)
 
