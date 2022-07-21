@@ -194,4 +194,3 @@ class CifarClient(fl.client.NumPyClient):
 fl.client.start_numpy_client("[::]:"+serverPort, client=CifarClient())
 
 
-

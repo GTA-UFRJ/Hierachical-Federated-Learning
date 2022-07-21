@@ -2,6 +2,10 @@ import flwr as fl
 import tensorflow as tf
 from pickle import load, dump
 import numpy as np
+from sys import argv
+
+if len(argv) >= 2:
+    localEpochs = int(argv[1])
 
 
 # first class
@@ -65,33 +69,18 @@ x_test5 = x_test5[400:]
 y_test5 = y_test5[400:]
 
 
+
 # create the training data
-np.append(x_train1,x_train2)
-np.append(x_train1,x_train3)
-np.append(x_train1,x_train4)
-np.append(x_train1,x_train5)
+x_train = np.concatenate((x_train1,x_train2,x_train3,x_train4,x_train5))
 
 # create the training label
-np.append(y_train1,y_train2)
-np.append(y_train1,y_train3)
-np.append(y_train1,y_train4)
-np.append(y_train1,y_train5)
+y_train = np.concatenate((y_train1,y_train2,y_train3,y_train4,y_train5))
 
 # create the test data
-np.append(x_test1,x_test2)
-np.append(x_test1,x_test3)
-np.append(x_test1,x_test4)
-np.append(x_test1,x_test5)
+x_test = np.concatenate((x_test1,x_test2,x_test3,x_test4,x_test5))
 
 # create the test label
-np.append(y_test1,y_test2)
-np.append(y_test1,y_test3)
-np.append(y_test1,y_test4)
-np.append(y_test1,y_test5)
-x_train = x_train1
-y_train = y_train1
-x_test = x_test1
-y_test = y_test1
+y_test = np.concatenate((y_test1,y_test2,y_test3,y_test4,y_test5))
 
 
 model = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
@@ -107,7 +96,7 @@ class CifarClient(fl.client.NumPyClient):
 
     def fit(self, parameters, config):
         model.set_weights(parameters)
-        model.fit(x_train, y_train, epochs=5,steps_per_epoch=512)
+        model.fit(x_train, y_train, epochs=localEpochs,steps_per_epoch=31)
         with open('client-10-weights','wb') as writeFile:
             dump(model.get_weights(),writeFile)
         return model.get_weights(), len(x_train), {}
@@ -119,6 +108,6 @@ class CifarClient(fl.client.NumPyClient):
 
 	
 
-fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+fl.client.start_numpy_client("[::]:8071", client=CifarClient())
 
 

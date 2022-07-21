@@ -1,14 +1,13 @@
-
-
 import flwr as fl
 import tensorflow as tf
 from pickle import load, dump
 import numpy as np
 from sys import argv
-from time import sleep
+
+
 
 # client configuration
-clientID = 1
+clientID = 4
 serverPort = '8080'
 numberOfClients = 10
 trainLength = 5000
@@ -32,6 +31,8 @@ majorityTest = int(testLength*alfa)
 minorityTrain = int(trainLength*((1-alfa)/9))
 minorityTest = int(testLength*((1-alfa)/9))
 
+
+
 # load the dataset
 
 # first class
@@ -40,10 +41,10 @@ y_train1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribut
 x_test1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class0Test','rb')),dtype=np.float32)
 y_test1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class0TestLabel','rb')),dtype=np.float32)
 
-x_train1 = x_train1[:majorityTrain]
-y_train1 = y_train1[:majorityTrain]
-x_test1 = x_test1[:majorityTest]
-y_test1 = y_test1[:majorityTest]
+x_train1 = x_train1[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+y_train1 = y_train1[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+x_test1 = x_test1[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
+y_test1 = y_test1[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
 
 
 # second class
@@ -52,10 +53,10 @@ y_train2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribut
 x_test2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class1Test','rb')),dtype=np.float32)
 y_test2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class1TestLabel','rb')),dtype=np.float32)
 
-x_train2 = x_train2[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-y_train2 = y_train2[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-x_test2 = x_test2[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
-y_test2 = y_test2[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
+x_train2 = x_train2[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+y_train2 = y_train2[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+x_test2 = x_test2[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
+y_test2 = y_test2[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
 
 # third class
 
@@ -64,10 +65,10 @@ y_train3 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribut
 x_test3 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class2Test','rb')),dtype=np.float32)
 y_test3 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class2TestLabel','rb')),dtype=np.float32)
 
-x_train3 = x_train3[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-y_train3 = y_train3[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-x_test3 = x_test3[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
-y_test3 = y_test3[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
+x_train3 = x_train3[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+y_train3 = y_train3[majorityTrain+minorityTrain*(int(clientID)-2):majorityTrain+minorityTrain*(int(clientID)-1)+1]
+x_test3 = x_test3[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
+y_test3 = y_test3[majorityTest+minorityTest*(int(clientID)-2):majorityTest+minorityTest*(int(clientID)-1)+1]
 
 
 # fourth class
@@ -77,10 +78,10 @@ y_train4 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribut
 x_test4 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class3Test','rb')),dtype=np.float32)
 y_test4 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class3TestLabel','rb')),dtype=np.float32)
 
-x_train4 = x_train4[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-y_train4 = y_train4[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID)+1]
-x_test4 = x_test4[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
-y_test4 = y_test4[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
+x_train4 = x_train4[minorityTrain*(int(clientID)-1):majorityTrain+minorityTrain*(int(clientID)-1)]
+y_train4 = y_train4[minorityTrain*(int(clientID)-1):majorityTrain+minorityTrain*(int(clientID)-1)]
+x_test4 = x_test4[minorityTest*(int(clientID)-1):majorityTest+minorityTest*(int(clientID)-1)]
+y_test4 = y_test4[minorityTest*(int(clientID)-1):majorityTest+minorityTest*(int(clientID)-1)]
 
 # fifth class
 
@@ -154,7 +155,6 @@ y_train10 = y_train10[minorityTrain*(int(clientID)-1):minorityTrain*int(clientID
 x_test10 = x_test10[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
 y_test10 = y_test10[minorityTest*(int(clientID)-1):minorityTest*int(clientID)+1]
 
-
 # create the training data
 x_train = np.concatenate((x_train1,x_train2,x_train3,x_train4,x_train5,x_train6,x_train7,x_train8,x_train9,x_train10))
 
@@ -166,7 +166,6 @@ x_test = np.concatenate((x_test1,x_test2,x_test3,x_test4,x_test5,x_test6,x_test7
 
 # create the test label
 y_test = np.concatenate((y_test1,y_test2,y_test3,y_test4,y_test5,y_test6,y_test7,y_test8,y_test9,y_test10))
-
 
 
 model = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
@@ -195,6 +194,5 @@ class CifarClient(fl.client.NumPyClient):
 	
 
 fl.client.start_numpy_client("[::]:"+serverPort, client=CifarClient())
-
 
 

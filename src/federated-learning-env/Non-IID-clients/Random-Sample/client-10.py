@@ -4,10 +4,10 @@ import numpy as np
 from pickle import load
 
 
-x_train = np.asarray(load(open('../../../datasets/CIFAR-10/IID-distribution/training-data/data/dataset-trainx-client10','rb')), dtype=np.float32)
-y_train = np.asarray(load(open('../../../datasets/CIFAR-10/IID-distribution/training-data/label/dataset-trainy-client10','rb')), dtype=np.float32)
-x_test = np.asarray(load(open('../../../datasets/CIFAR-10/IID-distribution/test-data/data/dataset-testx-client10','rb')), dtype=np.float32)
-y_test = np.asarray(load(open('../../../datasets/CIFAR-10/IID-distribution/test-data/label/dataset-testy-client10','rb')), dtype=np.float32)
+x_train = np.asarray(load(open('../../../../datasets/CIFAR-10/IID-distribution/training-data/data/dataset-trainx-client10','rb')), dtype=np.float32)
+y_train = np.asarray(load(open('../../../../datasets/CIFAR-10/IID-distribution/training-data/label/dataset-trainy-client10','rb')), dtype=np.float32)
+x_test = np.asarray(load(open('../../../../datasets/CIFAR-10/IID-distribution/test-data/data/dataset-testx-client10','rb')), dtype=np.float32)
+y_test = np.asarray(load(open('../../../../datasets/CIFAR-10/IID-distribution/test-data/label/dataset-testy-client10','rb')), dtype=np.float32)
 
 
 
@@ -34,6 +34,6 @@ class CifarClient(fl.client.NumPyClient):
 
 	
 
-fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+fl.client.start_numpy_client("[::]:8085", client=CifarClient())
 
 

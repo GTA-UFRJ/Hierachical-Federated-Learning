@@ -1,15 +1,23 @@
 import flwr as fl
 import tensorflow as tf
-from pickle import load
-from pickle import dump
+from pickle import load, dump
 import numpy as np
+from sys import argv
 
+serverPort = '8080'
+localEpochs = 5
+
+if len(argv) >= 2:
+    serverPort = argv[1]
+
+if len(argv) >= 3:
+    localEpochs = int(argv[2])
 
 # first class
-x_train1 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/train/class4Train','rb')),dtype=np.float32)
-y_train1 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/train/class4TrainLabel','rb')),dtype=np.float32)
-x_test1 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/test/class4Test','rb')),dtype=np.float32)
-y_test1 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/test/class4TestLabel','rb')),dtype=np.float32)
+x_train1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/train/class4Train','rb')),dtype=np.float32)
+y_train1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/train/class4TrainLabel','rb')),dtype=np.float32)
+x_test1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class4Test','rb')),dtype=np.float32)
+y_test1 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class4TestLabel','rb')),dtype=np.float32)
 
 x_train1 = x_train1[:2500]
 y_train1 = y_train1[:2500]
@@ -18,26 +26,27 @@ y_test1 = y_test1[:500]
 
 
 # second class
-x_train2 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/train/class5Train','rb')),dtype=np.float32)
-y_train2 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/train/class5TrainLabel','rb')),dtype=np.float32)
-x_test2 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/test/class5Test','rb')),dtype=np.float32)
-y_test2 = np.asarray(load(open('../../../datasets/CIFAR-10/Non-IID-distribution/test/class5TestLabel','rb')),dtype=np.float32)
+x_train2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/train/class5Train','rb')),dtype=np.float32)
+y_train2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/train/class5TrainLabel','rb')),dtype=np.float32)
+x_test2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class5Test','rb')),dtype=np.float32)
+y_test2 = np.asarray(load(open('../../../../datasets/CIFAR-10/Non-IID-distribution/test/class5TestLabel','rb')),dtype=np.float32)
 
 x_train2 = x_train2[:2500]
 y_train2 = y_train2[:2500]
 x_test2 = x_test2[:500]
 y_test2 = y_test2[:500]
 
-np.append(x_train1,x_train2)
-np.append(y_train1,y_train2)
-np.append(x_test1,x_test2)
-np.append(y_test1,y_test2)
+# create the training data
+x_train = np.concatenate((x_train1,x_train2))
 
-x_train = x_train1
-y_train = y_train1
-x_test = x_test1
-y_test = y_test1
+# create the training label
+y_train = np.concatenate((y_train1,y_train2))
 
+# create the test data
+x_test = np.concatenate((x_test1,x_test2))
+
+# create the test label
+y_test = np.concatenate((y_test1,y_test2))
 
 model = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
 
@@ -52,8 +61,8 @@ class CifarClient(fl.client.NumPyClient):
 
     def fit(self, parameters, config):
         model.set_weights(parameters)
-        model.fit(x_train, y_train, epochs=5,steps_per_epoch=512)
-        with open('client-5-weights','wb') as writeFile:
+        model.fit(x_train, y_train, epochs=localEpochs,steps_per_epoch=31)
+        with open('weights/client-5-weights','wb') as writeFile:
             dump(model.get_weights(),writeFile)
         return model.get_weights(), len(x_train), {}
 
@@ -64,6 +73,6 @@ class CifarClient(fl.client.NumPyClient):
 
 	
 
-fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+fl.client.start_numpy_client("[::]:"+serverPort, client=CifarClient())
 
 

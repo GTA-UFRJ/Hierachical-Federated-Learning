@@ -36,6 +36,6 @@ class CifarClient(fl.client.NumPyClient):
 
 	
 
-fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+fl.client.start_numpy_client("[::]:8081", client=CifarClient())
 
 
